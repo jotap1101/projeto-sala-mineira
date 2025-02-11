@@ -25,10 +25,11 @@ class ResumeFilterForm(forms.Form):
     has_drivers_license = forms.BooleanField(required=False, label='Possui CNH?')
     is_first_job = forms.BooleanField(required=False, label='Primeiro Emprego?')
     is_currently_employed = forms.BooleanField(required=False, label='Atualmente Empregado?')
+    employee = forms.ModelChoiceField(queryset=Employee.objects.all(), required=False, label='Funcionário')
     status = forms.ModelChoiceField(queryset=StatusResume.objects.all(), required=False, label='Status')
     is_deleted = forms.BooleanField(required=False, label='Está Deletado?')
     created_at = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}), label='Data de Criação do Currículo')
-    updated_at = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}), label='Data de Atualização do Currículo')
+    updated_at = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}), label='Data de Atual. do Currículo')
 
 # Formsets para relações 1:N (create)
 EducationFormSet = inlineformset_factory(Resume, Education, fields='__all__', extra=1, can_delete=False)

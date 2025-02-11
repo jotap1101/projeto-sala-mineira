@@ -6,12 +6,29 @@
 {% block title %}Início{% endblock title %}
 
 {% block content %}
+<section>
     <div class="container py-4">
+        {% include 'partials/_icons.html' %}
+
+        {% if not user.is_authenticated %}
+            <div class="alert alert-info alert-dismissible fade show mb-3 d-flex align-items-center" role="alert">
+                <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Info: " width="16" height="16">
+                    <use xlink:href="#info-fill" />
+                </svg>
+                <div>
+                    Olá, visitante! Para acessar todas as funcionalidades do sistema, 
+                    <a href="{% url 'employee:login' %}" class="alert-link">faça login</a> ou 
+                    <a href="{% url 'employee:register' %}" class="alert-link">cadastre-se</a>.
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+
         <div class="bg-body-tertiary p-5 rounded">
             <h1 class="text-center">Olá, é bom te ver por aqui!</h1>
             <p class="lead text-center">Esta é a página inicial do software de Currículos da sala mineira de Cabo Verde.</p>
             <p class="lead text-center">
-                Seja Bem vindo(a) 
+                Seja Bem vindo(a)
                 <strong>
                     {% if user.is_authenticated %}
                         {{ user.username }}
@@ -22,4 +39,5 @@
             </p>
         </div>
     </div>
+</section>
 {% endblock content %}

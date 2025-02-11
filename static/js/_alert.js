@@ -2,8 +2,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to hide alerts, validation messages and red borders after 2 seconds
     function hideMessages() {
         setTimeout(() => {
-            document.querySelectorAll('.alert').forEach(alert => {
-                alert.style.display = 'none';
+            document.querySelectorAll('#alert-message').forEach(alert => {
+                alert.classList.remove('d-flex', 'align-items-center');
+                alert.classList.add('d-none');
             });
 
             document.querySelectorAll('.is-invalid').forEach(input => {

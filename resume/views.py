@@ -2,6 +2,7 @@ from candidate.forms import CandidateForm, ContactInfoFormSet, AddressFormSet, S
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.utils.timezone import localtime
@@ -46,33 +47,36 @@ def create_resume(request):
         resume_language_formset = ResumeLanguageFormSet(request.POST)
 
         if (candidate_form.is_valid() and resume_form.is_valid() and
-                contact_info_formset.is_valid() and address_formset.is_valid() and social_network_formset.is_valid() and
-                education_formset.is_valid() and experience_formset.is_valid() and resume_language_formset.is_valid()):
-            
-            candidate = candidate_form.save()
+            contact_info_formset.is_valid() and address_formset.is_valid() and social_network_formset.is_valid() and
+            education_formset.is_valid() and experience_formset.is_valid() and resume_language_formset.is_valid()):
 
-            contact_info_formset.instance = candidate
-            contact_info_formset.save()
-            address_formset.instance = candidate
-            address_formset.save()
-            social_network_formset.instance = candidate
-            social_network_formset.save()
+            with transaction.atomic():
+                candidate = candidate_form.save()
 
-            resume = resume_form.save(commit=False)
-            resume.employee = request.user
-            resume.candidate = candidate
-            resume.save()
+                contact_info_formset.instance = candidate
+                contact_info_formset.save()
+                address_formset.instance = candidate
+                address_formset.save()
+                social_network_formset.instance = candidate
+                social_network_formset.save()
 
-            resume_form.save_m2m()
+                resume = resume_form.save(commit=False)
+                resume.employee = request.user
+                resume.candidate = candidate
+                resume.save()
 
-            education_formset.instance = resume
-            education_formset.save()
-            experience_formset.instance = resume
-            experience_formset.save()
-            resume_language_formset.instance = resume
-            resume_language_formset.save()
+                resume_form.save_m2m()
 
-            return redirect('resume:list_resumes')
+                education_formset.instance = resume
+                education_formset.save()
+                experience_formset.instance = resume
+                experience_formset.save()
+                resume_language_formset.instance = resume
+                resume_language_formset.save()
+
+                messages.success(request, 'Currículo criado com sucesso.')
+
+                return redirect('resume:list_resumes')
 
     else:
         candidate_form = CandidateForm()
@@ -116,33 +120,45 @@ def update_resume(request, resume_id):
         resume_language_formset = ResumeLanguageUpdateFormSet(request.POST, instance=resume)
 
         if (candidate_form.is_valid() and resume_form.is_valid() and
-                contact_info_formset.is_valid() and address_formset.is_valid() and social_network_formset.is_valid() and
-                education_formset.is_valid() and experience_formset.is_valid() and resume_language_formset.is_valid()):
+            contact_info_formset.is_valid() and address_formset.is_valid() and social_network_formset.is_valid() and
+            education_formset.is_valid() and experience_formset.is_valid() and resume_language_formset.is_valid()):
             
-            candidate = candidate_form.save()
+            if (candidate_form.has_changed() or resume_form.has_changed() or
+            contact_info_formset.has_changed() or address_formset.has_changed() or social_network_formset.has_changed() or
+            education_formset.has_changed() or experience_formset.has_changed() or resume_language_formset.has_changed()):
+            
+                with transaction.atomic():
+                    candidate = candidate_form.save()
 
-            contact_info_formset.instance = candidate
-            contact_info_formset.save()
-            address_formset.instance = candidate
-            address_formset.save()
-            social_network_formset.instance = candidate
-            social_network_formset.save()
+                    contact_info_formset.instance = candidate
+                    contact_info_formset.save()
+                    address_formset.instance = candidate
+                    address_formset.save()
+                    social_network_formset.instance = candidate
+                    social_network_formset.save()
 
-            resume = resume_form.save(commit=False)
-            # resume.employee = request.user
-            resume.candidate = candidate
-            resume.save()
+                    resume = resume_form.save(commit=False)
+                    resume.candidate = candidate
+                    resume.save()
 
-            resume_form.save_m2m()
+                    resume_form.save_m2m()
 
-            education_formset.instance = resume
-            education_formset.save()
-            experience_formset.instance = resume
-            experience_formset.save()
-            resume_language_formset.instance = resume
-            resume_language_formset.save()
+                    education_formset.instance = resume
+                    education_formset.save()
+                    experience_formset.instance = resume
+                    experience_formset.save()
+                    resume_language_formset.instance = resume
+                    resume_language_formset.save()
 
-            return redirect('resume:list_resumes')
+                    messages.success(request, 'Currículo atualizado com sucesso.')
+
+                    return redirect('resume:list_resumes')
+            else:
+                messages.info(request, 'Nenhuma alteração foi feita.')
+
+                return redirect('resume:list_resumes')
+        else:
+            messages.error(request, 'Por favor, corrija os erros no formulário.')
 
     else:
         candidate_form = CandidateForm(instance=candidate)
@@ -219,6 +235,9 @@ def filter_resumes(request):
 
             if form.cleaned_data.get("is_currently_employed"):
                 resumes = resumes.filter(candidate__is_currently_employed=form.cleaned_data["is_currently_employed"])
+
+            if form.cleaned_data.get("employee"):
+                resumes = resumes.filter(employee=form.cleaned_data["employee"])
 
             if form.cleaned_data.get("status"):
                 resumes = resumes.filter(status=form.cleaned_data["status"])
