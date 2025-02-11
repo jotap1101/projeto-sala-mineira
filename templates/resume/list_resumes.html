@@ -98,11 +98,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% if not resumes %}
-                                <tr>
-                                    <td colspan="4">Nenhum currículo cadastrado.</td>
-                                </tr>
-                            {% endif %}
+
                         </tbody>
                     </table>
                 </div>
@@ -152,6 +148,14 @@
 
                     tableBody.insertAdjacentHTML("beforeend", row);
                 });
+            } else if (data.resumes.length === 0 && data.count === 0) {
+                const noResumesRow = `
+                    <tr>
+                        <td colspan="4">Não há currículos cadastrados no sistema.</td>
+                    </tr>
+                `;
+
+                tableBody.insertAdjacentHTML("beforeend", noResumesRow);
             } else if (data.resumes.length === 0) {
                 const emptyRow = `
                     <tr>

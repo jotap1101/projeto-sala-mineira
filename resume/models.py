@@ -85,6 +85,18 @@ class Institution(models.Model):
     def __str__(self):
         return self.name
     
+# class Degree(models.Model):
+#     class Meta:
+#         db_table = 'degree'
+#         verbose_name = 'Grau'
+#         verbose_name_plural = 'Graus'
+
+#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, verbose_name='ID')
+#     name = models.CharField(max_length=255, unique=True, verbose_name='Nome')
+
+#     def __str__(self):
+#         return self.name
+    
 class Course(models.Model):
     class Meta:
         db_table = 'course'
@@ -93,6 +105,8 @@ class Course(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, verbose_name='ID')
     name = models.CharField(max_length=255, unique=True, verbose_name='Nome')
+    # institution = models.ForeignKey(Institution, on_delete=models.PROTECT, verbose_name='Instituição')
+    # degree = models.ForeignKey(Degree, on_delete=models.PROTECT, verbose_name='Grau')
 
     def __str__(self):
         return self.name
@@ -105,7 +119,7 @@ class Education(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, verbose_name='ID')
     resume = models.ForeignKey(Resume, on_delete=models.CASCADE, related_name='education', verbose_name='Currículo')
-    institution = models.ForeignKey(Institution, on_delete=models.PROTECT, verbose_name='Instituição')
+    institution = models.ForeignKey(Institution, on_delete=models.PROTECT, verbose_name='Instituição') # Tirar esse campo se for relacionar instituição com curso
     course = models.ForeignKey(Course, on_delete=models.PROTECT, verbose_name='Curso')
     start_date = models.DateField(verbose_name='Data de Início')
     end_date = models.DateField(null=True, blank=True, verbose_name='Data de Término')

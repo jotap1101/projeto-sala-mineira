@@ -65,12 +65,12 @@
                 </a> -->
             </div>
         </div>
-        <div class="sb-sidenav-footer py-4">
+        <div class="sb-sidenav-footer py-3">
             <div class="small">
                 {% if user.is_authenticated %}
-                    Logado como: {{ user.username }}
+                    Logado como: <strong>{{ user.username }}</strong>
                 {% else %}
-                    Usuário Anônimo
+                    <strong>Usuário Anônimo</strong>
                 {% endif %}
             </div>
         </div>

@@ -8,12 +8,53 @@ class ResumeForm(forms.ModelForm):
     class Meta:
         model = Resume
         fields = '__all__'
-        exclude = ['employee', 'candidate']
+        exclude = ['employee', 'candidate', 'is_deleted']
         widgets = {
-            'summary': forms.Textarea(attrs={'rows': 3, 'style': 'resize: none;'}),
+            'summary': forms.Textarea(attrs={'rows': 3, 'style': 'resize: none;', 'placeholder': 'Digite um resumo sobre o candidato'}),
             'subareas_of_interest': forms.SelectMultiple(attrs={'placeholder': 'Selecione as áreas de interesse'}),
             'skills': forms.SelectMultiple(attrs={'placeholder': 'Selecione as habilidades'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super(ResumeForm, self).__init__(*args, **kwargs)
+        self.fields['status'].empty_label = 'Status do currículo'
+
+class EducationForm(forms.ModelForm):
+    class Meta:
+        model = Education
+        fields = '__all__'
+        widgets = {
+            'start_date': forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+            'end_date': forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(EducationForm, self).__init__(*args, **kwargs)
+        self.fields['institution'].empty_label = 'Selecione a instituição'
+        self.fields['course'].empty_label = 'Selecione o curso'
+
+class ExperienceForm(forms.ModelForm):
+    class Meta:
+        model = Experience
+        fields = '__all__'
+        widgets = {
+            'start_date': forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+            'end_date': forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(ExperienceForm, self).__init__(*args, **kwargs)
+        self.fields['company'].empty_label = 'Selecione a empresa'
+
+class ResumeLanguageForm(forms.ModelForm):
+    class Meta:
+        model = ResumeLanguage
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super(ResumeLanguageForm, self).__init__(*args, **kwargs)
+        self.fields['language'].empty_label = 'Selecione o idioma'
+        self.fields['language_proficiency'].empty_label = 'Selecione o nível'
 
 class ResumeFilterForm(forms.Form):
     full_name = forms.CharField(max_length=255, required=False, label='Nome Completo')
@@ -32,11 +73,11 @@ class ResumeFilterForm(forms.Form):
     updated_at = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}), label='Data de Atual. do Currículo')
 
 # Formsets para relações 1:N (create)
-EducationFormSet = inlineformset_factory(Resume, Education, fields='__all__', extra=1, can_delete=False)
-ExperienceFormSet = inlineformset_factory(Resume, Experience, fields='__all__', extra=1, can_delete=False)
-ResumeLanguageFormSet = inlineformset_factory(Resume, ResumeLanguage, fields='__all__', extra=1, can_delete=False)
+EducationFormSet = inlineformset_factory(Resume, Education, form=EducationForm, extra=1, can_delete=False)
+ExperienceFormSet = inlineformset_factory(Resume, Experience, form=ExperienceForm, extra=1, can_delete=False)
+ResumeLanguageFormSet = inlineformset_factory(Resume, ResumeLanguage, form=ResumeLanguageForm, extra=1, can_delete=False)
 
 # Formsets para relações 1:N (update)
-EducationUpdateFormSet = inlineformset_factory(Resume, Education, fields='__all__', extra=0, can_delete=True)
-ExperienceUpdateFormSet = inlineformset_factory(Resume, Experience, fields='__all__', extra=0, can_delete=True)
-ResumeLanguageUpdateFormSet = inlineformset_factory(Resume, ResumeLanguage, fields='__all__', extra=0, can_delete=True)
+EducationUpdateFormSet = inlineformset_factory(Resume, Education, form=EducationForm, extra=0, can_delete=True)
+ExperienceUpdateFormSet = inlineformset_factory(Resume, Experience, form=ExperienceForm, extra=0, can_delete=True)
+ResumeLanguageUpdateFormSet = inlineformset_factory(Resume, ResumeLanguage, form=ResumeLanguageForm, extra=0, can_delete=True)

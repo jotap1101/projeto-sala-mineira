@@ -52,21 +52,35 @@
                             {% if employee.job_title %}
                                 {{ employee.job_title }}
                             {% else %}
-                                Cargo não informado
+                                Espaç reservado para o cargo
                             {% endif %}
                         </p>
                         <p class="text-muted mb-4">
                             {% if employee.department %}
                                 {{ employee.department }}
                             {% else %}
-                                Departamento não informado
+                                Espaço reservado para o departamento
                             {% endif %}
                         </p>
                         <div class="d-flex justify-content-center mb-2 gap-2">
-                            <button type="button" class="btn btn-primary" onclick="openModal('{% url 'employee:edit_account' employee.id %}', 'Editar Usuário', '{{ employee_change_form|crispy|escapejs }}', 'Fechar', 'Salvar alterações', 'success')">
+                            <button type="button" class="btn btn-primary" onclick="openModal(
+                                '{% url 'employee:edit_account' employee.id %}', 
+                                'Editar Usuário', 
+                                '{{ employee_change_form|crispy|escapejs }}', 
+                                'Fechar', 
+                                'Salvar alterações', 
+                                'success'
+                            )">
                                 Editar Dados
                             </button>
-                            <button type="button" class="btn btn-danger" onclick="openModal('#', 'Excluir Usuário', 'Tem certeza que deseja excluir sua conta?', 'Cancelar', 'Excluir', 'danger')">
+                            <button type="button" class="btn btn-danger" onclick="openModal(
+                                '#', 
+                                'Excluir Usuário', 
+                                'Tem certeza que deseja excluir sua conta?', 
+                                'Cancelar', 
+                                'Excluir', 
+                                'danger'
+                            )">
                                 Excluir conta
                             </button>
                         </div>

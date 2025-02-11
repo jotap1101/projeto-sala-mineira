@@ -199,65 +199,69 @@ def delete_resume(request, resume_id):
 
 @login_required(login_url='employee:login')
 def filter_resumes(request):
-    if request.method == "GET" and request.headers.get("X-Requested-With") == "XMLHttpRequest":
+    if request.method == 'GET' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         form = ResumeFilterForm(request.GET)
         resumes = Resume.objects.select_related('candidate').all()
+        resumes_before_filtering = Resume.objects.all()
 
         if form.is_valid():
-            if form.cleaned_data.get("full_name"):
-                full_name = form.cleaned_data["full_name"]
+            if form.cleaned_data.get('full_name'):
+                full_name = form.cleaned_data['full_name']
                 resumes = resumes.filter(
                     candidate__first_name__icontains=full_name
                 ) | resumes.filter(
                     candidate__last_name__icontains=full_name
                 )
 
-            if form.cleaned_data.get("date_of_birth"):
-                resumes = resumes.filter(candidate__date_of_birth=form.cleaned_data["date_of_birth"])
+            if form.cleaned_data.get('date_of_birth'):
+                resumes = resumes.filter(candidate__date_of_birth=form.cleaned_data['date_of_birth'])
 
-            if form.cleaned_data.get("gender"):
-                resumes = resumes.filter(candidate__gender=form.cleaned_data["gender"])
+            if form.cleaned_data.get('gender'):
+                resumes = resumes.filter(candidate__gender=form.cleaned_data['gender'])
 
-            if form.cleaned_data.get("cpf"):
-                resumes = resumes.filter(candidate__cpf__icontains=form.cleaned_data["cpf"])
+            if form.cleaned_data.get('cpf'):
+                resumes = resumes.filter(candidate__cpf__icontains=form.cleaned_data['cpf'])
 
-            if form.cleaned_data.get("rg"):
-                resumes = resumes.filter(candidate__rg__icontains=form.cleaned_data["rg"])
+            if form.cleaned_data.get('rg'):
+                resumes = resumes.filter(candidate__rg__icontains=form.cleaned_data['rg'])
 
-            if form.cleaned_data.get("has_disability"):
-                resumes = resumes.filter(candidate__has_disability=form.cleaned_data["has_disability"])
+            if form.cleaned_data.get('has_disability'):
+                resumes = resumes.filter(candidate__has_disability=form.cleaned_data['has_disability'])
 
-            if form.cleaned_data.get("has_drivers_license"):
-                resumes = resumes.filter(candidate__has_drivers_license=form.cleaned_data["has_drivers_license"])
+            if form.cleaned_data.get('has_drivers_license'):
+                resumes = resumes.filter(candidate__has_drivers_license=form.cleaned_data['has_drivers_license'])
 
-            if form.cleaned_data.get("is_first_job"):
-                resumes = resumes.filter(candidate__is_first_job=form.cleaned_data["is_first_job"])
+            if form.cleaned_data.get('is_first_job'):
+                resumes = resumes.filter(candidate__is_first_job=form.cleaned_data['is_first_job'])
 
-            if form.cleaned_data.get("is_currently_employed"):
-                resumes = resumes.filter(candidate__is_currently_employed=form.cleaned_data["is_currently_employed"])
+            if form.cleaned_data.get('is_currently_employed'):
+                resumes = resumes.filter(candidate__is_currently_employed=form.cleaned_data['is_currently_employed'])
 
-            if form.cleaned_data.get("employee"):
-                resumes = resumes.filter(employee=form.cleaned_data["employee"])
+            if form.cleaned_data.get('employee'):
+                resumes = resumes.filter(employee=form.cleaned_data['employee'])
 
-            if form.cleaned_data.get("status"):
-                resumes = resumes.filter(status=form.cleaned_data["status"])
+            if form.cleaned_data.get('status'):
+                resumes = resumes.filter(status=form.cleaned_data['status'])
 
-            if form.cleaned_data.get("is_deleted"):
-                resumes = resumes.filter(is_deleted=form.cleaned_data["is_deleted"])
+            if form.cleaned_data.get('is_deleted'):
+                resumes = resumes.filter(is_deleted=form.cleaned_data['is_deleted'])
 
-            if form.cleaned_data.get("created_at"):
-                resumes = resumes.filter(created_at=form.cleaned_data["created_at"])
+            if form.cleaned_data.get('created_at'):
+                created_at_date = form.cleaned_data['created_at']
+                resumes = resumes.filter(created_at__date=created_at_date)
 
-            if form.cleaned_data.get("updated_at"):
-                resumes = resumes.filter(updated_at=form.cleaned_data["updated_at"])
+            if form.cleaned_data.get('updated_at'):
+                updated_at_date = form.cleaned_data['updated_at']
+                resumes = resumes.filter(updated_at__date=updated_at_date)
 
         data = {
-            "resumes": [
+            'count': resumes_before_filtering.count(),
+            'resumes': [
                 {
-                    "id": resume.id,
-                    "candidate": f"{resume.candidate.first_name} {resume.candidate.last_name}",
-                    "created_at": localtime(resume.created_at).strftime("%d/%m/%Y às %H:%M"),
-                    "updated_at": localtime(resume.updated_at).strftime("%d/%m/%Y às %H:%M"),
+                    'id': resume.id,
+                    'candidate': f'{resume.candidate.first_name} {resume.candidate.last_name}',
+                    'created_at': localtime(resume.created_at).strftime('%d/%m/%Y às %H:%M'),
+                    'updated_at': localtime(resume.updated_at).strftime('%d/%m/%Y às %H:%M'),
                 }
                 for resume in resumes
             ]
@@ -265,7 +269,7 @@ def filter_resumes(request):
 
         return JsonResponse(data, safe=False)
 
-    return JsonResponse({"error": "Requisição inválida"}, status=400)
+    return JsonResponse({'error': 'Requisição inválida'}, status=400)
 
 @login_required(login_url='employee:login')
 def download_resume_pdf(request, resume_id):
@@ -304,18 +308,18 @@ def download_resume_pdf(request, resume_id):
 
     p.setFont('Helvetica', 11)
 
-    p.drawString(x_offset, y_offset - 1.5 * cm, f"Data de Nascimento: {candidate.date_of_birth.strftime('%d/%m/%Y')}")
-    p.drawString(x_offset, y_offset - 2 * cm, f"CNH: {'Sim' if candidate.has_drivers_license else 'Não'}")
-    p.drawString(x_offset, y_offset - 2.5 * cm, f"CPF: {candidate.cpf}")
+    p.drawString(x_offset, y_offset - 1.5 * cm, f'Data de Nascimento: {candidate.date_of_birth.strftime('%d/%m/%Y')}')
+    p.drawString(x_offset, y_offset - 2 * cm, f'CNH: {'Sim' if candidate.has_drivers_license else 'Não'}')
+    p.drawString(x_offset, y_offset - 2.5 * cm, f'CPF: {candidate.cpf}')
 
     y_offset -= 2.5 * cm
 
-    p.drawString(x_offset, y_offset - 0.5 * cm, f"Endereço: {address[0].street}, {address[0].number} - {address[0].neighborhood} - {address[0].city}/{address[0].city.state.abbreviation}")
+    p.drawString(x_offset, y_offset - 0.5 * cm, f'Endereço: {address[0].street}, {address[0].number} - {address[0].neighborhood} - {address[0].city}/{address[0].city.state.abbreviation}')
 
     y_offset -= 0.5 * cm
 
-    p.drawString(x_offset, y_offset - 0.5 * cm, f"Telefone: {contact_info[0].phone_number}")
-    p.drawString(x_offset, y_offset - 1 * cm, f"Email: {contact_info[0].email}")
+    p.drawString(x_offset, y_offset - 0.5 * cm, f'Telefone: {contact_info[0].phone_number}')
+    p.drawString(x_offset, y_offset - 1 * cm, f'Email: {contact_info[0].email}')
 
     y_offset -= 2 * cm
     styles = getSampleStyleSheet()
@@ -352,7 +356,7 @@ def download_resume_pdf(request, resume_id):
 
         for education in resume.education.all():
             end_date = education.end_date.strftime('%d/%m/%Y') if education.end_date else 'Atual'
-            education_text = f"\u2022 {education.course.name} ({education.institution.name}), {education.start_date.strftime('%d/%m/%Y')} - {end_date}"
+            education_text = f'\u2022 {education.course.name} ({education.institution.name}), {education.start_date.strftime('%d/%m/%Y')} - {end_date}'
             p.drawString(2 * cm, y_offset, education_text)
 
             y_offset -= 0.5 * cm
@@ -373,7 +377,7 @@ def download_resume_pdf(request, resume_id):
 
         for experience in resume.experience.all():
             end_date = experience.end_date.strftime('%d/%m/%Y') if experience.end_date else 'Em andamento'
-            experience_text = f"\u2022 {experience.job_title.name} - {experience.company.name} - {experience.start_date.strftime('%d/%m/%Y')} - {end_date}"
+            experience_text = f'\u2022 {experience.job_title.name} - {experience.company.name} - {experience.start_date.strftime('%d/%m/%Y')} - {end_date}'
 
             p.drawString(2 * cm, y_offset, experience_text)
 
@@ -394,7 +398,7 @@ def download_resume_pdf(request, resume_id):
         p.setFont('Helvetica', 11)
 
         for language in resume.language.all():
-            language_text = f"\u2022 {language.language.name} - {language.language_proficiency}"
+            language_text = f'\u2022 {language.language.name} - {language.language_proficiency}'
 
             p.drawString(2 * cm, y_offset, language_text)
 

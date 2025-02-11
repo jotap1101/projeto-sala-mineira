@@ -67,12 +67,11 @@ class Candidate(models.Model):
         super(Candidate, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        if self.photo:
-            if os.path.exists(self.photo.path):
-                try:
-                    os.remove(self.photo.path)
-                except Exception as e:
-                    print(f'Error deleting file: {e}')
+        if self.photo and os.path.isfile(self.photo.path):
+            try:
+                os.remove(self.photo.path)
+            except Exception as e:
+                print(f'Error deleting file: {e}')
 
         super(Candidate, self).delete(*args, **kwargs)
 
@@ -168,6 +167,7 @@ class SocialNetwork(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, verbose_name='ID')
     candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE, related_name='social_network', verbose_name='Candidato')
+    # candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE, null=True, blank=True, related_name='social_network', verbose_name='Candidato')
     name = models.CharField(max_length=255, verbose_name='Nome')
     url = models.URLField(verbose_name='URL')
 

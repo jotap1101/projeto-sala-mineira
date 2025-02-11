@@ -67,7 +67,7 @@
                         <div class="col-12">
                             {{ candidate_form.has_drivers_license|as_crispy_field }}
                         </div>
-                        <div class="col-12 col-md-3">
+                        <div class="col-12 col-md-4 col-lg-3">
                             {{ candidate_form.drivers_license_category|as_crispy_field }}
                         </div>
                         <div class="col-12">
@@ -197,103 +197,132 @@
 {% block javascript %}
 <script src="{% static 'js/resume/jquery.formset.js' %}"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="{% static 'js/resume/jquery.mask.min.js' %}"></script>
 <script>
-        
-$(document).ready(function() {
-    $('.inline-form-contact').formset({
-        prefix: '{{ contact_info_formset.prefix }}',
-        addText: 'Adicionar contato',
-        deleteText: 'Remover',
-        formCssClass: 'pb-3',
-        addCssClass: 'btn btn-primary w-100',
-        deleteCssClass: 'btn btn-danger w-100',
-        added: clearFormFields,
-        // hideLastAddForm: true,
-    });
+    $(document).ready(function() {
+        // Inicializa o formset para o formulário de contato
+        $('.inline-form-contact').formset({
+            prefix: '{{ contact_info_formset.prefix }}',
+            addText: 'Adicionar contato',
+            deleteText: 'Remover',
+            formCssClass: 'pb-3',
+            addCssClass: 'btn btn-primary w-100',
+            deleteCssClass: 'btn btn-danger w-100',
+            added: clearFormFields,
+            // hideLastAddForm: true,
+        });
 
-    $('.inline-form-address').formset({
-        prefix: '{{ address_formset.prefix }}',
-        addText: 'Adicionar endereço',
-        deleteText: 'Remover',
-        formCssClass: 'pb-3',
-        addCssClass: 'btn btn-primary w-100',
-        deleteCssClass: 'btn btn-danger w-100',
-        added: clearFormFields,
-    });
+        // Inicializa o formset para o formulário de endereço
+        $('.inline-form-address').formset({
+            prefix: '{{ address_formset.prefix }}',
+            addText: 'Adicionar endereço',
+            deleteText: 'Remover',
+            formCssClass: 'pb-3',
+            addCssClass: 'btn btn-primary w-100',
+            deleteCssClass: 'btn btn-danger w-100',
+            added: clearFormFields,
+        });
 
-    $('.inline-form-social').formset({
-        prefix: '{{ social_network_formset.prefix }}',
-        addText: 'Adicionar rede social',
-        deleteText: 'Remover',
-        formCssClass: 'pb-3',
-        addCssClass: 'btn btn-primary w-100',
-        deleteCssClass: 'btn btn-danger w-100',
-        added: clearFormFields,
-    });
+        // Inicializa o formset para o formulário de redes sociais
+        $('.inline-form-social').formset({
+            prefix: '{{ social_network_formset.prefix }}',
+            addText: 'Adicionar rede social',
+            deleteText: 'Remover',
+            formCssClass: 'pb-3',
+            addCssClass: 'btn btn-primary w-100',
+            deleteCssClass: 'btn btn-danger w-100',
+            added: clearFormFields,
+        });
 
-    $('.inline-form-education').formset({
-        prefix: '{{ education_formset.prefix }}',
-        addText: 'Adicionar formação',
-        deleteText: 'Remover',
-        formCssClass: 'pb-3',
-        addCssClass: 'btn btn-primary w-100',
-        deleteCssClass: 'btn btn-danger w-100',
-        added: clearFormFields,
-    });
+        // Inicializa o formset para o formulário de educação
+        $('.inline-form-education').formset({
+            prefix: '{{ education_formset.prefix }}',
+            addText: 'Adicionar formação',
+            deleteText: 'Remover',
+            formCssClass: 'pb-3',
+            addCssClass: 'btn btn-primary w-100',
+            deleteCssClass: 'btn btn-danger w-100',
+            added: clearFormFields,
+        });
 
-    $('.inline-form-experience').formset({
-        prefix: '{{ experience_formset.prefix }}',
-        addText: 'Adicionar experiência',
-        deleteText: 'Remover',
-        formCssClass: 'pb-3',
-        addCssClass: 'btn btn-primary w-100',
-        deleteCssClass: 'btn btn-danger w-100',
-        added: clearFormFields,
-    });
+        // Inicializa o formset para o formulário de experiência profissional
+        $('.inline-form-experience').formset({
+            prefix: '{{ experience_formset.prefix }}',
+            addText: 'Adicionar experiência',
+            deleteText: 'Remover',
+            formCssClass: 'pb-3',
+            addCssClass: 'btn btn-primary w-100',
+            deleteCssClass: 'btn btn-danger w-100',
+            added: clearFormFields,
+        });
 
-    $('.inline-form-language').formset({
-        prefix: '{{ resume_language_formset.prefix }}',
-        addText: 'Adicionar idioma',
-        deleteText: 'Remover',
-        formCssClass: 'pb-3',
-        addCssClass: 'btn btn-primary w-100',
-        deleteCssClass: 'btn btn-danger w-100',
-        added: clearFormFields,
-    });
+        // Inicializa o formset para o formulário de idiomas
+        $('.inline-form-language').formset({
+            prefix: '{{ resume_language_formset.prefix }}',
+            addText: 'Adicionar idioma',
+            deleteText: 'Remover',
+            formCssClass: 'pb-3',
+            addCssClass: 'btn btn-primary w-100',
+            deleteCssClass: 'btn btn-danger w-100',
+            added: clearFormFields,
+        });
 
-    $('#id_subareas_of_interest').select2({
-        placeholder: 'Selecione as subáreas de interesse',
-        allowClear: true,
-        language: {
-            noResults: function() {
-                return "Nenhum resultado encontrado";
+        // Inicializa o campo de subáreas de interesse com o plugin select2
+        $('#id_subareas_of_interest').select2({
+            placeholder: 'Selecione as subáreas de interesse',
+            allowClear: true,
+            language: {
+                noResults: function() {
+                    return "Nenhum resultado encontrado";
+                }
             }
-        }
-    });
+        });
 
-    $('#id_skills').select2({
-        placeholder: 'Selecione as subáreas de interesse',
-        allowClear: true,
-        language: {
-            noResults: function() {
-                return "Nenhum resultado encontrado";
+        // Inicializa o campo de habilidades com o plugin select2
+        $('#id_skills').select2({
+            placeholder: 'Selecione as subáreas de interesse',
+            allowClear: true,
+            language: {
+                noResults: function() {
+                    return "Nenhum resultado encontrado";
+                }
             }
+        });
+
+        // Lógica para mostrar/ocultar campo de descrição da deficiência
+        $('#id_has_disability').change(function() {
+            if ($(this).is(':checked')) {
+                $('#div_id_disability_description').show();
+            } else {
+                $('#div_id_disability_description').hide();
+            }
+        }).change();
+
+        // Lógica para mostrar/ocultar campo Categoria CNH
+        $('#id_has_drivers_license').change(function() {
+            if ($(this).is(':checked')) {
+                $('#div_id_drivers_license_category').show();
+            } else {
+                $('#div_id_drivers_license_category').hide();
+            }
+        }).change();
+
+        // Função para ocultar o checkbox de exclusão (padrão do formset)
+        function hiddenDeleteCheckbox() {
+            $('[id*="DELETE"]').hide();
         }
-    });
 
-    function hiddenDeleteCheckbox() {
-        $('[id*="DELETE"]').hide();
-    }
+        // Função para limpar os campos do formulário
+        function clearFormFields(row) {
+            row.find('input, select, textarea').val('');
+            row.find('.is-invalid').removeClass('is-invalid');
+            row.find('.invalid-feedback').remove();
+            
+            hiddenDeleteCheckbox();
+        }
 
-    function clearFormFields(row) {
-        row.find('input, select, textarea').val('');
-        row.find('.is-invalid').removeClass('is-invalid');
-        row.find('.invalid-feedback').remove();
-        
+        // Chama a função para ocultar o checkbox de exclusão ao carregar a página
         hiddenDeleteCheckbox();
-    }
-
-    hiddenDeleteCheckbox();
-});
+    });
 </script>
 {% endblock javascript %}
