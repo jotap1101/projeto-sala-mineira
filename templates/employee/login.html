@@ -1,0 +1,37 @@
+{% extends 'base/base.html' %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Entrar{% endblock title %}
+
+{% block content-auth %}
+<div class="d-flex align-items-center justify-content-center vh-100 px-3">
+    <div class="container custom-container">
+        <!-- Alert -->
+        {% if messages %}
+            {% include 'partials/_alert.html' %}
+        {% endif %}
+
+        <!-- Título -->
+        <h1 class="h3 mb-3 fw-normal">Entrar</h1>
+
+        <!-- Formulário -->
+        <form action="" method="post" class="needs-validation" novalidate>
+            {% csrf_token %}
+            {{ employee_login_form|crispy }}
+
+            <div class="d-flex flex-column gap-2">
+                <button type="submit" class="btn btn-primary">Entrar</button>
+                <a href="{% url 'employee:register' %}" class="btn btn-link">Não possui uma conta? Crie uma</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content-auth %}
+
+{% block javascript %}
+<script>
+    document.getElementById('id_username').focus();
+</script>
+{% endblock javascript %}

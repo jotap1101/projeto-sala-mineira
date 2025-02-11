@@ -1,0 +1,24 @@
+<!-- <div class="alert alert-message.tags alert-dismissible fade show" role="alert">
+    message
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div> -->
+
+{% if messages %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var messages = [
+                {% for message in messages %}
+                    "{{ message }}"
+                {% endfor %}
+            ];
+
+            console.log(messages);
+
+            if (messages.length > 0) {
+                var messageText = messages.join("<br>");
+
+                openModal(false, "Mensagem", messageText, "Fechar", "", "");
+            }
+        });
+    </script>
+{% endif %}

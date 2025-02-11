@@ -1,0 +1,299 @@
+{% extends 'base/base.html' %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+{% if request.resolver_match.url_name == 'create_resume' %}
+    Cadastro de Currículo
+{% else %}
+    Atualização de Currículo
+{% endif %}
+{% endblock title %}
+
+{% block css %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+<style>
+    .asteriskField {
+        color: red;
+    }
+</style>
+{% endblock css %}
+
+{% block content %}
+<section>
+    <div class="container py-4">
+        <h2 class="text-center">
+            {% if request.resolver_match.url_name == 'create_resume' %}
+                Cadastro de Currículo
+            {% else %}
+                Atualização de Currículo
+            {% endif %}
+        </h2>
+
+        <form method="post" id="form" enctype="multipart/form-data" class="needs-validation" novalidate>
+            {% csrf_token %}
+
+            <div class="card mt-4">
+                <div class="card-header bg-body-tertiary text-secondary">
+                    <h4 class="mb-0">Dados do Candidato</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ candidate_form.first_name|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ candidate_form.last_name|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6 col-xl-3">
+                            {{ candidate_form.date_of_birth|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6 col-xl-3">
+                            {{ candidate_form.gender|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6 col-xl-3">
+                            {{ candidate_form.cpf|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6 col-xl-3">
+                            {{ candidate_form.rg|as_crispy_field }}
+                        </div>
+                        <div class="col-12">
+                            {{ candidate_form.has_disability|as_crispy_field }}
+                        </div>
+                        <div class="col-12">
+                            {{ candidate_form.disability_description|as_crispy_field }}
+                        </div>
+                        <div class="col-12">
+                            {{ candidate_form.has_drivers_license|as_crispy_field }}
+                        </div>
+                        <div class="col-12 col-md-3">
+                            {{ candidate_form.drivers_license_category|as_crispy_field }}
+                        </div>
+                        <div class="col-12">
+                            {{ candidate_form.is_first_job|as_crispy_field }}
+                        </div>
+                        <div class="col-12">
+                            {{ candidate_form.is_currently_employed|as_crispy_field }}
+                        </div>
+                        <div class="col-12">
+                            {{ candidate_form.photo|as_crispy_field }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header bg-body-tertiary text-secondary">
+                    <h5 class="mb-0">Informações de contato</h5>
+                </div>
+                <div class="card-body">
+                    {{ contact_info_formset.management_form }}
+
+                    {% for contact_form in contact_info_formset %}
+                        <div class="inline-form-contact">
+                            {{ contact_form|crispy }}
+                            <hr class="mt-0">
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header bg-body-tertiary text-secondary">
+                    <h5 class="mb-0">Informações residenciais</h5>
+                </div>
+                <div class="card-body">
+                    {{ address_formset.management_form }}
+                    {% for address_form in address_formset %}
+                        <div class="inline-form-address">
+                            {{ address_form|crispy }}
+                            <hr class="mt-0">
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header bg-body-tertiary text-secondary">
+                    <h5 class="mb-0">Redes sociais</h5>
+                </div>
+                <div class="card-body">
+                    {{ social_network_formset.management_form }}
+                    {% for social_network_form in social_network_formset %}
+                        <div class="inline-form-social">
+                            {{ social_network_form|crispy }}
+                            <hr class="mt-0">
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header bg-body-tertiary text-secondary">
+                    <h4 class="mb-0">Currículo</h4>
+                </div>
+                <div class="card-body">
+                    {{ resume_form|crispy }}
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header bg-body-tertiary text-secondary">
+                    <h5 class="mb-0">Educação</h5>
+                </div>
+                <div class="card-body">
+                    {{ education_formset.management_form }}
+                    {% for education_form in education_formset %}
+                        <div class="inline-form-education">
+                            {{ education_form|crispy }}
+                            <hr class="mt-0">
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header bg-body-tertiary text-secondary">
+                    <h5 class="mb-0">Experiência Profissional</h5>
+                </div>
+                <div class="card-body">
+                    {{ experience_formset.management_form }}
+                    {% for experience_form in experience_formset %}
+                        <div class="inline-form-experience">
+                            {{ experience_form|crispy }}
+                            <hr class="mt-0">
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header bg-body-tertiary text-secondary">
+                    <h5 class="mb-0">Idiomas</h5>
+                </div>
+                <div class="card-body">
+                    {{ resume_language_formset.management_form }}
+                    {% for resume_language_form in resume_language_formset %}
+                        <div class="inline-form-language">
+                            {{ resume_language_form|crispy }}
+                            <hr class="mt-0">
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success mt-3">
+                {% if request.resolver_match.url_name == 'create_resume' %}
+                    Cadastrar
+                {% else %}
+                    Atualizar
+                {% endif %}
+            </button>
+        </form>
+    </div>
+</section>
+{% endblock content %}
+
+{% block javascript %}
+<script src="{% static 'js/resume/jquery.formset.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+        
+$(document).ready(function() {
+    $('.inline-form-contact').formset({
+        prefix: '{{ contact_info_formset.prefix }}',
+        addText: 'Adicionar contato',
+        deleteText: 'Remover',
+        formCssClass: 'pb-3',
+        addCssClass: 'btn btn-primary w-100',
+        deleteCssClass: 'btn btn-danger w-100',
+        added: clearFormFields,
+        // hideLastAddForm: true,
+    });
+
+    $('.inline-form-address').formset({
+        prefix: '{{ address_formset.prefix }}',
+        addText: 'Adicionar endereço',
+        deleteText: 'Remover',
+        formCssClass: 'pb-3',
+        addCssClass: 'btn btn-primary w-100',
+        deleteCssClass: 'btn btn-danger w-100',
+        added: clearFormFields,
+    });
+
+    $('.inline-form-social').formset({
+        prefix: '{{ social_network_formset.prefix }}',
+        addText: 'Adicionar rede social',
+        deleteText: 'Remover',
+        formCssClass: 'pb-3',
+        addCssClass: 'btn btn-primary w-100',
+        deleteCssClass: 'btn btn-danger w-100',
+        added: clearFormFields,
+    });
+
+    $('.inline-form-education').formset({
+        prefix: '{{ education_formset.prefix }}',
+        addText: 'Adicionar formação',
+        deleteText: 'Remover',
+        formCssClass: 'pb-3',
+        addCssClass: 'btn btn-primary w-100',
+        deleteCssClass: 'btn btn-danger w-100',
+        added: clearFormFields,
+    });
+
+    $('.inline-form-experience').formset({
+        prefix: '{{ experience_formset.prefix }}',
+        addText: 'Adicionar experiência',
+        deleteText: 'Remover',
+        formCssClass: 'pb-3',
+        addCssClass: 'btn btn-primary w-100',
+        deleteCssClass: 'btn btn-danger w-100',
+        added: clearFormFields,
+    });
+
+    $('.inline-form-language').formset({
+        prefix: '{{ resume_language_formset.prefix }}',
+        addText: 'Adicionar idioma',
+        deleteText: 'Remover',
+        formCssClass: 'pb-3',
+        addCssClass: 'btn btn-primary w-100',
+        deleteCssClass: 'btn btn-danger w-100',
+        added: clearFormFields,
+    });
+
+    $('#id_subareas_of_interest').select2({
+        placeholder: 'Selecione as subáreas de interesse',
+        allowClear: true,
+        language: {
+            noResults: function() {
+                return "Nenhum resultado encontrado";
+            }
+        }
+    });
+
+    $('#id_skills').select2({
+        placeholder: 'Selecione as subáreas de interesse',
+        allowClear: true,
+        language: {
+            noResults: function() {
+                return "Nenhum resultado encontrado";
+            }
+        }
+    });
+
+    function hiddenDeleteCheckbox() {
+        $('[id*="DELETE"]').hide();
+    }
+
+    function clearFormFields(row) {
+        row.find('input, select, textarea').val('');
+        row.find('.is-invalid').removeClass('is-invalid');
+        row.find('.invalid-feedback').remove();
+        
+        hiddenDeleteCheckbox();
+    }
+
+    hiddenDeleteCheckbox();
+});
+</script>
+{% endblock javascript %}
