@@ -1,7 +1,8 @@
-<!-- Modal -->
+<!-- Dynamic Modal -->
 <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
+            <!-- Form -->
             <form action="" method="post" enctype="multipart/form-data" class="needs-validation" id="modalForm" novalidate>
                 {% csrf_token %}
 
@@ -18,6 +19,7 @@
                 </div>
             </form>
 
+            <!-- Message -->
             <div id="modalMessage" style="display: none;">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5 modal-title-message" id="staticBackdropLabel"></h1>
