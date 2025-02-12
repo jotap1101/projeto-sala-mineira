@@ -23,18 +23,18 @@ class EmployeeLoginForm(AuthenticationForm):
         fields = ['username', 'password']
 
     def clean_username(self):
-        username = self.cleaned_data['username']
+        username = self.cleaned_data.get('username')
 
-        if not Employee.objects.filter(username=username).exists():
+        if not username or not Employee.objects.filter(username=username).exists():
             raise forms.ValidationError('Usuário não encontrado.')
 
         return username
     
     def clean_password(self):
-        username = self.cleaned_data['username']
-        password = self.cleaned_data['password']
+        username = self.cleaned_data.get('username')
+        password = self.cleaned_data.get('password')
 
-        if Employee.objects.filter(username=username).exists():
+        if username and Employee.objects.filter(username=username).exists():
             user = Employee.objects.get(username=username)
 
             if not user.check_password(password):
