@@ -273,145 +273,165 @@ def filter_resumes(request):
 
 @login_required(login_url='employee:login')
 def download_resume_pdf(request, resume_id):
-    pass
-    # resume = get_object_or_404(Resume, pk=resume_id)
-    # response = HttpResponse(content_type='application/pdf')
-    # response['Content-Disposition'] = f'inline; filename="{resume.candidate.get_full_name()}.pdf"'
-    # buffer = BytesIO()
-    # p = canvas.Canvas(buffer, pagesize=A4)
-    # doc = SimpleDocTemplate(buffer, pagesize=A4)
-    # width, height = A4
-    # candidate = resume.candidate
-    # contact_info = candidate.contact_info.all()
-    # address = candidate.address.all()
-    # x_offset = 2 * cm
-    # y_offset = height - 2 * cm
+    resume = get_object_or_404(Resume, pk=resume_id)
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'inline; filename="{resume.candidate.get_full_name()}.pdf"'
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer, pagesize=A4)
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    width, height = A4
+    candidate = resume.candidate
+    contact_info = candidate.contact_info.all()
+    address = candidate.address.all()
+    x_offset = 2 * cm
+    y_offset = height - 2 * cm
 
-    # if candidate.photo:
-    #     image_path = os.path.join(settings.MEDIA_ROOT, candidate.photo.name)
-    #     image_reader = ImageReader(image_path)
-    #     image_width, image_height = image_reader.getSize()
-    #     aspect_ratio = image_height / image_width
-    #     img_width = 4 * cm
-    #     img_height = img_width * aspect_ratio
+    if candidate.photo:
+        image_path = os.path.join(settings.MEDIA_ROOT, candidate.photo.name)
+        image_reader = ImageReader(image_path)
+        image_width, image_height = image_reader.getSize()
+        aspect_ratio = image_height / image_width
+        img_width = 4 * cm
+        img_height = img_width * aspect_ratio
 
-    #     if img_height > 4 * cm:
-    #         img_height = 4 * cm
-    #         img_width = img_height / aspect_ratio
+        if img_height > 4 * cm:
+            img_height = 4 * cm
+            img_width = img_height / aspect_ratio
 
-    #     p.drawImage(image_path, x_offset, y_offset - img_height, width=img_width, height=img_height)
-    #     x_offset += img_width + 1 * cm
+        p.drawImage(image_path, x_offset, y_offset - img_height, width=img_width, height=img_height)
+        x_offset += img_width + 1 * cm
 
-    # p.setFont('Helvetica-Bold', 17)
-    # p.drawString(x_offset, y_offset - 0.6 * cm, candidate.get_full_name())
+    p.setFont('Helvetica-Bold', 17)
+    p.drawString(x_offset, y_offset - 0.6 * cm, candidate.get_full_name())
     
-    # y_offset -= 0 * cm
+    y_offset -= 0 * cm
 
-    # p.setFont('Helvetica', 11)
+    p.setFont('Helvetica', 11)
 
-    # p.drawString(x_offset, y_offset - 1.5 * cm, f'Data de Nascimento: {candidate.date_of_birth.strftime('%d/%m/%Y')}')
-    # p.drawString(x_offset, y_offset - 2 * cm, f'CNH: {'Sim' if candidate.has_drivers_license else 'Não'}')
-    # p.drawString(x_offset, y_offset - 2.5 * cm, f'CPF: {candidate.cpf}')
+    p.drawString(x_offset, y_offset - 1.5 * cm, f'Data de Nascimento: {candidate.date_of_birth.strftime('%d/%m/%Y')}')
+    p.drawString(x_offset, y_offset - 2 * cm, f'CNH: {'Sim - ' + candidate.drivers_license_category.name if candidate.has_drivers_license else 'Não'}')
+    # formatted_cpf = f"{candidate.cpf[:3]}.{candidate.cpf[3:6]}.{candidate.cpf[6:9]}-{candidate.cpf[9:]}"
+    # p.drawString(x_offset, y_offset - 2.5 * cm, f'CPF: {formatted_cpf}')
+    
+    y_offset -= 2.5 * cm
 
-    # y_offset -= 2.5 * cm
+    p.drawString(x_offset, y_offset - 0.01 * cm, f'Endereço: {address[0].street}, {address[0].number} - {address[0].neighborhood} - {address[0].city}/{address[0].city.state.abbreviation}')
 
-    # p.drawString(x_offset, y_offset - 0.5 * cm, f'Endereço: {address[0].street}, {address[0].number} - {address[0].neighborhood} - {address[0].city}/{address[0].city.state.abbreviation}')
+    y_offset -= 0.5 * cm
 
-    # y_offset -= 0.5 * cm
+    formatted_phone_number = f"({contact_info[0].phone_number[:2]}) {contact_info[0].phone_number[2:7]}-{contact_info[0].phone_number[7:]}"
+    p.drawString(x_offset, y_offset - 0.01 * cm, f'Telefone: {formatted_phone_number}')
+    p.drawString(x_offset, y_offset - 0.5 * cm, f'Email: {contact_info[0].email}')
 
-    # p.drawString(x_offset, y_offset - 0.5 * cm, f'Telefone: {contact_info[0].phone_number}')
-    # p.drawString(x_offset, y_offset - 1 * cm, f'Email: {contact_info[0].email}')
+    y_offset -= 2 * cm
+    styles = getSampleStyleSheet()
+    elements = []
 
-    # y_offset -= 2 * cm
-    # styles = getSampleStyleSheet()
-    # elements = []
+    styles = getSampleStyleSheet()
 
-    # if resume.summary:
-    #     p.setFont('Helvetica-Bold', 12)
-    #     p.drawString(2 * cm, y_offset, 'RESUMO')
+    if resume.summary:
+        p.setFont('Helvetica-Bold', 12)
+        p.drawString(2 * cm, y_offset, 'RESUMO')
 
-    #     y_offset -= 0.2 * cm
+        y_offset -= 0.2 * cm
 
-    #     p.line(2 * cm, y_offset, width - 2 * cm, y_offset)
+        p.line(2 * cm, y_offset, width - 2 * cm, y_offset)
 
-    #     y_offset -= 0.3 * cm
-    #     resume_paragraph = Paragraph(resume.summary, styles['Normal'])
-    #     resume_width, resume_height = resume_paragraph.wrap(width - 4 * cm, height - y_offset)
+        y_offset -= 0.3 * cm
+        resume_paragraph = Paragraph(resume.summary, styles['Normal'])
+        resume_width, resume_height = resume_paragraph.wrap(width - 4 * cm, height - y_offset)
 
-    #     resume_paragraph.drawOn(p, 2 * cm, y_offset - resume_height)
+        resume_paragraph.drawOn(p, 2 * cm, y_offset - resume_height)
 
-    #     y_offset -= resume_height + 0.8 * cm
+        y_offset -= resume_height + 0.8 * cm
 
 
-    # if resume.education.exists():
-    #     p.setFont('Helvetica-Bold', 12)
-    #     p.drawString(2 * cm, y_offset, 'FORMAÇÃO ACADÊMICA')
+    if resume.education.exists():
+        p.setFont('Helvetica-Bold', 12)
+        p.drawString(2 * cm, y_offset, 'FORMAÇÃO ACADÊMICA')
 
-    #     y_offset -= 0.2 * cm
+        y_offset -= 0.2 * cm
 
-    #     p.line(2 * cm, y_offset, width - 2 * cm, y_offset)
+        p.line(2 * cm, y_offset, width - 2 * cm, y_offset)
 
-    #     y_offset -= 0.8 * cm
+        y_offset -= 0.8 * cm
 
-    #     p.setFont('Helvetica', 11)
+        p.setFont('Helvetica', 11)
 
-    #     for education in resume.education.all():
-    #         end_date = education.end_date.strftime('%d/%m/%Y') if education.end_date else 'Atual'
-    #         education_text = f'\u2022 {education.course.name} ({education.institution.name}), {education.start_date.strftime('%d/%m/%Y')} - {end_date}'
-    #         p.drawString(2 * cm, y_offset, education_text)
+        for education in resume.education.all():
+            # Nome do curso e instituição
+            education_text_line1 = f'\u2022 {education.course.name} - {education.institution.name}'
+            p.drawString(2 * cm, y_offset, education_text_line1)
+            y_offset -= 0.5 * cm
 
-    #         y_offset -= 0.5 * cm
+            # Datas de início e término
+            start_date = education.start_date.strftime('%Y')
+            end_date = education.end_date.strftime('%Y') if education.end_date else 'Em andamento'
+            education_text_line2 = f'   Início: {start_date} - Previsão de término: {end_date}'
+            p.drawString(2 * cm, y_offset, education_text_line2)
+            y_offset -= 0.5 * cm
+            
 
-    #     y_offset -= 0.5 * cm
+        y_offset -= 0.5 * cm
 
-    # if resume.experience.exists():
-    #     p.setFont('Helvetica-Bold', 12)
-    #     p.drawString(2 * cm, y_offset, 'EXPERIÊNCIA PROFISSIONAL')
+    if resume.experience.exists():
+        p.setFont('Helvetica-Bold', 12)
+        p.drawString(2 * cm, y_offset, 'EXPERIÊNCIA PROFISSIONAL')
 
-    #     y_offset -= 0.2 * cm
+        y_offset -= 0.2 * cm
 
-    #     p.line(2 * cm, y_offset, width - 2 * cm, y_offset)
+        p.line(2 * cm, y_offset, width - 2 * cm, y_offset)
 
-    #     y_offset -= 0.8 * cm
+        y_offset -= 0.8 * cm
 
-    #     p.setFont('Helvetica', 11)
+        p.setFont('Helvetica', 11)
 
-    #     for experience in resume.experience.all():
-    #         end_date = experience.end_date.strftime('%d/%m/%Y') if experience.end_date else 'Em andamento'
-    #         experience_text = f'\u2022 {experience.job_title.name} - {experience.company.name} - {experience.start_date.strftime('%d/%m/%Y')} - {end_date}'
+        for experience in resume.experience.all():
+            # Cargo
+            job_title_text = f'\u2022 Cargo: {experience.job_title.name}'
+            p.drawString(2 * cm, y_offset, job_title_text)
+            y_offset -= 0.5 * cm
 
-    #         p.drawString(2 * cm, y_offset, experience_text)
+            # Empresa
+            company_text = f'   Empresa: {experience.company.name}'
+            p.drawString(2 * cm, y_offset, company_text)
+            y_offset -= 0.5 * cm
 
-    #         y_offset -= 0.5 * cm
+            # Datas de início e término
+            start_date = experience.start_date.strftime('%Y')
+            end_date = experience.end_date.strftime('%Y') if experience.end_date else 'Em andamento'
+            date_text = f'   Período: {start_date} -> {end_date}'
+            p.drawString(2 * cm, y_offset, date_text)
+            y_offset -= 0.8 * cm
 
-    #     y_offset -= 0.5 * cm
+        y_offset -= 0.5 * cm
 
-    # if resume.language.exists():
-    #     p.setFont('Helvetica-Bold', 12)
-    #     p.drawString(2 * cm, y_offset, 'IDIOMAS')
+    if resume.language.exists():
+        p.setFont('Helvetica-Bold', 12)
+        p.drawString(2 * cm, y_offset, 'IDIOMAS')
 
-    #     y_offset -= 0.2 * cm
+        y_offset -= 0.2 * cm
 
-    #     p.line(2 * cm, y_offset, width - 2 * cm, y_offset)
+        p.line(2 * cm, y_offset, width - 2 * cm, y_offset)
 
-    #     y_offset -= 0.8 * cm
+        y_offset -= 0.8 * cm
 
-    #     p.setFont('Helvetica', 11)
+        p.setFont('Helvetica', 11)
 
-    #     for language in resume.language.all():
-    #         language_text = f'\u2022 {language.language.name} - {language.language_proficiency}'
+        for language in resume.language.all():
+            language_text = f'\u2022 {language.language.name} - {language.language_proficiency}'
 
-    #         p.drawString(2 * cm, y_offset, language_text)
+            p.drawString(2 * cm, y_offset, language_text)
 
-    #         y_offset -= 0.5 * cm
+            y_offset -= 0.5 * cm
 
-    #     y_offset -= 0.5 * cm
+        y_offset -= 0.5 * cm
 
-    # p.showPage()
-    # p.save()
+    p.showPage()
+    p.save()
 
-    # buffer.seek(0)
-    # response.write(buffer.getvalue())
-    # buffer.close()
+    buffer.seek(0)
+    response.write(buffer.getvalue())
+    buffer.close()
 
-    # return response
+    return response
