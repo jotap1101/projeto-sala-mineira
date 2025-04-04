@@ -308,8 +308,8 @@ def download_resume_pdf(request, resume_id):
 
     p.setFont('Helvetica', 11)
 
-    p.drawString(x_offset, y_offset - 1.5 * cm, f'Data de Nascimento: {candidate.date_of_birth.strftime('%d/%m/%Y')}')
-    p.drawString(x_offset, y_offset - 2 * cm, f'CNH: {'Sim - ' + candidate.drivers_license_category.name if candidate.has_drivers_license else 'Não'}')
+    p.drawString(x_offset, y_offset - 1.5 * cm, f"Data de Nascimento: {candidate.date_of_birth.strftime('%d/%m/%Y')}")
+    p.drawString(x_offset, y_offset - 2 * cm, f"CNH: {'Sim - ' + candidate.drivers_license_category.name if candidate.has_drivers_license else 'Não'}")
     # formatted_cpf = f"{candidate.cpf[:3]}.{candidate.cpf[3:6]}.{candidate.cpf[6:9]}-{candidate.cpf[9:]}"
     # p.drawString(x_offset, y_offset - 2.5 * cm, f'CPF: {formatted_cpf}')
     
